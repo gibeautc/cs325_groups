@@ -1,0 +1,30 @@
+void max_sum_subArray_4(int array[])
+{
+	//for each starting location n, sum from n to count
+	//track largest value of sum in sum array
+	printf("Starting Sum\n");
+	int count=sizeof(array);//actual count of elements
+	int i;
+	int sum_Array[count];//create sum array
+	int n;
+	for(n=0;n<count;n++)
+	{
+		int sum=0;
+		int max=0;
+		for(i=n;i<count;i++)
+		{
+			//printf("Made it here i=%d n=%d\n",i,n);fflush(NULL);
+			sum=sum+array[i];
+			if(sum>max){max=sum;}
+		}
+		sum_Array[n]=max;
+	}
+	int max=0;
+	int index=0;
+	for(n=0;n<count;n++)
+	{
+		if(sum_Array[n]>max){max=sum_Array[n];index=n;}
+		//printf("Sum of index:%d is:%d\n",n,sum_Array[n]);	
+	}
+	printf("Max index is: %d with a sum of: %d\n",index,max);
+}
