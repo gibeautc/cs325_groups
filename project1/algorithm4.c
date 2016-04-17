@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/time.h>
+#include <time.h>
 
 typedef struct {
 	int start;
@@ -9,7 +10,7 @@ typedef struct {
 	int value;
 } tTuple;
 
-struct timeval time_start, time_stop, run_time;
+struct timeval time_start, time_stop, run_time, t;
 
 
 
@@ -19,10 +20,13 @@ struct timeval time_start, time_stop, run_time;
 
 
 tTuple max_sum_subArray_4(int* array);
+int* randomArray(int size);
 int* parseArray(char* line);
 void getLine(FILE* inFile, FILE* outFile);
 FILE* openFile(const char* filname);
 void timeRightNow(FILE* outFile);
+void largeArrayLoop();
+int n[10] = {25, 50, 100, 250, 500, 1000, 1500, 3500, 5000, 10000};
 int arraySize;
 
 
@@ -37,6 +41,7 @@ int arraySize;
 	const char* fileIn = "MSS_TestProblems.txt";
 	const char* fileOut = "MSS_TestResults.txt";
 	FILE *fpIn, *fpOut;
+	int i, j, *tempArray;
 	
 	fpIn = openFile(fileIn);
 	fpOut = openFile(fileOut);
@@ -45,6 +50,8 @@ int arraySize;
 	
 	fclose(fpIn);
 	fclose(fpOut);
+	
+	largeArrayLoop();
 	   
 	return 0;
 }
@@ -84,6 +91,47 @@ tTuple max_sum_subArray_4(int* array){
 }
 
 
+void largeArrayLoop(){
+	
+	int i, *tempArray;
+	
+	for (i = 0; i < 10; i++){
+		
+		printf("\n*********** ALGORITHM 4 ***********\n");
+		printf("\nIteration %d: n = %d", i, n[i]);
+		tTuple subArray;		
+		tempArray = randomArray(n[i]);
+		
+		gettimeofday(&time_start, NULL);
+		subArray = max_sum_subArray_4(tempArray);
+		gettimeofday(&time_stop, NULL);
+		
+		timersub(&time_stop, &time_start, &run_time);
+		printf("\nThe max sub array is: %d\nStart: %d\nEnd: %d", subArray.value, subArray.start, subArray.end);
+		printf("\nComputed in %ld.%06ld seconds\n", (long int)run_time.tv_sec, (long int)run_time.tv_usec);
+		
+		free(tempArray);
+	}
+}
+
+
+int* randomArray(int size){
+	
+	int i, random;
+	int* randArray = malloc(size*10);
+	arraySize = size;
+	
+	gettimeofday(&t, NULL);
+	srand(t.tv_sec * t.tv_usec);
+	
+	for(i = 0; i < size; i++){
+		random = rand() % 200 - 100;
+		randArray[i] = random;
+	}
+	return randArray;
+}
+
+
 int* parseArray(char* passedLine){
 	
 	char* token;
@@ -98,7 +146,6 @@ int* parseArray(char* passedLine){
 	
 	while(token != NULL){
 		sscanf(token, "%d", &nextNum);
-		printf("\nNumber: %d", nextNum);
 		parsedArray[i] = nextNum;
 		i++;
 		token = strtok(NULL,",");
@@ -111,7 +158,7 @@ int* parseArray(char* passedLine){
 void getLine(FILE* inFile, FILE* outFile){
 	
 	char lineIn[256];
-	int* parsedArray, max;
+	int* parsedArray;
 	tTuple subArray;
 	while ( fgets(lineIn, sizeof(lineIn), inFile) != NULL ){
 		
